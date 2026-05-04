@@ -1,0 +1,50 @@
+header .header {
+  font-size: large;
+}
+header .header .logo a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+header .header .logo a div {
+  border-radius: 7px;
+  background-color: rgb(185, 39, 112);
+  padding: 1px;
+}
+header .header .logo a p {
+  font-weight: bold;
+  color: rgb(185, 39, 112);
+  font-size: 30px;
+}
+header .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header .page-navigation a:hover {
+  color: rgb(185, 39, 112);
+}
+header .current a {
+  color: rgb(185, 39, 112);
+}
+
+.login {
+  display: none;
+  background-color: white;
+  max-width: 300px;
+  padding: 5rem;
+  position: fixed;
+  left: 50%;
+  top: 250px;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  min-width: 400px;
+  max-width: 10rem;
+}
+.login div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*# sourceMappingURL=header.css.map */

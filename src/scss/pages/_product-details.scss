@@ -1,0 +1,16 @@
+.product {
+  display: flex;
+  gap: 10px;
+  .product-photos {
+    flex: 1;
+  }
+  .product-options {
+    flex: 1;
+    .filters-container {
+      width: 100%;
+      .filter {
+        flex: 1;
+      }
+    }
+  }
+}

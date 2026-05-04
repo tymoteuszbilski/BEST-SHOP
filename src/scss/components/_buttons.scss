@@ -1,0 +1,27 @@
+button {
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: rgb(185, 39, 112);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 10px 32px;
+  a {
+    color: rgb(255, 255, 255);
+  }
+}
+
+.page-counter {
+  button {
+    background-color: rgb(255, 255, 255);
+    border: 3px solid rgb(185, 39, 112);
+    border-radius: 10px;
+    padding: 5px 16px;
+    color: black;
+  }
+  button:hover {
+    background-color: rgb(185, 39, 112);
+    color: rgb(255, 255, 255);
+  }
+}

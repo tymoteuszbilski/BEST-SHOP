@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/src/dist/main.css" />
+  </head>
+  <body>
+    <div class="login">
+      <form>
+        <label for="email">E-mail address</label>
+        <input name="email" value="email" />
+        <label for="password">Password</label>
+        <input name="password" value="password" />
+        <div>
+          <span>
+            <input name="remember " value="remember" type="checkbox" />
+            <label for="remember">Remember Me </label></span
+          >
+          <p>Forgot Your Password?</p>
+        </div>
+        <button type="submit">LOG IN</button>
+      </form>
+    </div>
+    <header>
+      <div class="header">
+        <nav class="icons socials">
+          <ul>
+            <li>FB</li>
+            <li>TT</li>
+            <li>IG</li>
+          </ul>
+        </nav>
+        <div class="logo">
+          <a href="/src/index.html">
+            <div><img src="/public/icons/logo.svg" /></div>
+            <p>BEST SHOP</p></a
+          >
+        </div>
+        <nav class="icons personal">
+          <ul>
+            <li><img src="/public/icons/iconUser.svg" /></li>
+            <li>
+              <a href="/src/html/cart.html"
+                ><img src="/public/icons/iconCart.svg"
+              /></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <hr />
+      <div>
+        <nav class="page-navigation">
+          <ul>
+            <li><a href="/src/index.html">Home</a></li>
+            <li><a href="/src/html/catalog.html">Catalog</a></li>
+            <li><a href="/src/html/about.html">About Us</a></li>
+            <li><a href="/src/html/contact.html">Contact Us</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="page-title-banner">
+      <div>
+        <h1>My Cart</h1>
+      </div>
+      <img src="/public/images/MyCart/banner image.jpg" />
+    </section>
+    <main>
+      <section class="summary">
+        <table>
+          <tr>
+            <th>IMAGE</th>
+            <th>PRODUCT NAME</th>
+            <th>PRICE</th>
+            <th>QUANTITY</th>
+            <th>TOTAL</th>
+            <th>DELETE</th>
+          </tr>
+          <tr>
+            <td><img /></td>
+            <td>Nomad Haven</td>
+            <td>$250</td>
+            <td>
+              <div class="amountChange">
+                <button>-</button>1<button>+</button>
+              </div>
+            </td>
+            <td>$250</td>
+            <td><img src="/public/icons/iconTrash.svg" /></td>
+          </tr>
+        </table>
+      </section>
+      <section class="finalization">
+        <div class="buttons">
+          <button>
+            <a href="/src/html/catalog.html">CONTINUE SHOPPING</a>
+          </button>
+          <button>CLEAR SHOPPING CART</button>
+        </div>
+        <div class="finalization-table">
+          <table>
+            <tr>
+              <td>Sub Total</td>
+              <td>$1230</td>
+            </tr>
+            <tr>
+              <td>Shipping</td>
+              <td>$1230</td>
+            </tr>
+            <tr>
+              <td>Discount</td>
+              <td>$1230</td>
+            </tr>
+            <tr>
+              <td>Total</td>
+              <td>$1230</td>
+            </tr>
+          </table>
+          <button>CHECKOUT</button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-benefits">
+        <h4 class="bold">Our Benefits</h4>
+        <div>
+          <div class="benefit">
+            <img src="/public/images/footerImages/footerBenefitsPlane.png" />
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+          </div>
+          <div class="benefit">
+            <img src="/public/images/footerImages/footerBenefitsTruck.png" />
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+          </div>
+          <div class="benefit">
+            <img src="/public/images/footerImages/footerBenefitsCoins.png" />
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+          </div>
+          <div class="benefit">
+            <img src="/public/images/footerImages/footerBenefitsHat.png" />
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-info">
+        <div id="about">
+          <p class="bold"><a href="/src/html/about.html">About Us</a></p>
+          <ul>
+            <li>Organisation</li>
+            <li>Partners</li>
+            <li>Clients</li>
+          </ul>
+        </div>
+        <div id="links">
+          <p class="bold">Interesting Links</p>
+          <ul>
+            <li>Photo Gallery</li>
+            <li>Our Team</li>
+            <li>Socials</li>
+          </ul>
+        </div>
+        <div id="achievements">
+          <p class="bold">Achievements</p>
+          <ul>
+            <li>Winning Awards</li>
+            <li>Press</li>
+            <li>Our Amazing Clients</li>
+          </ul>
+        </div>
+        <div id="shipping">
+          <p class="bold">Shipping Information</p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Debitis
+            libero nisi beatae? Perferendis exercitationem sint officia eos quia
+            voluptate mollitia! Minima quae necessitatibus officia harum ad
+            nihil tenetur cupiditate adipisci!
+          </p>
+        </div>
+        <div id="contact">
+          <p class="bold"><a href="/src/html/contact.html">Contact Us</a></p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. In
+            molestiae quibusdam porro quas harum magnam totam alias?
+          </p>
+        </div>
+        <div class="footer-contact">
+          <div class="image-text">
+            <div><img src="/public/icons/iconPhone.svg" /></div>
+            <p>Phone: (+63) 236 6322</p>
+          </div>
+          <div class="image-text">
+            <div>
+              <img src="/public/icons/iconEnvelope.svg" />
+            </div>
+            <p>public@news.com</p>
+          </div>
+          <div class="image-text">
+            <div><img src="/public/icons/iconClock.svg" /></div>
+            <p>
+              Mon - Fri: 10am - 6pm<br />
+              Sat - Sun: 10am - 6pm
+            </p>
+          </div>
+          <div class="image-text">
+            <div>
+              <img src="/public/icons/iconLocation.svg" />
+            </div>
+            <p>639 Jade Valley,<br />Washington DC</p>
+          </div>
+        </div>
+      </div>
+      <p id="copy">@Copyright 2025</p>
+    </footer>
+  </body>
+</html>

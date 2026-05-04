@@ -1,0 +1,186 @@
+@import "./layouts/footer.scss";
+@import "./layouts/header.scss";
+@import "./components/product-card";
+@import "./components/buttons";
+@import "./components/carousel";
+@import "./components/forms";
+@import "./pages/home";
+@import "./pages/catalog";
+@import "./pages/product-details";
+@import "./pages/cart";
+@import "./pages/contact";
+@import "./abstracts/variables";
+* {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.3;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+nav ul {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-weight: bold;
+}
+h2 {
+  font-weight: 900;
+  font-size: 2rem;
+}
+.bold,
+.product-name,
+.price,
+.person-name,
+label {
+  font-weight: bold;
+}
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.image-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// HEADER
+
+// TITLE
+.page-title {
+  font-size: large;
+  display: flex;
+  background-color: rgb(231, 232, 233);
+  align-items: center;
+  div {
+    flex: 1;
+  }
+  h1 {
+    font-weight: 900;
+    font-size: 3rem;
+  }
+}
+// MAIN
+main {
+  font-size: large;
+}
+// SECTION
+section {
+  .section-header {
+    width: fit-content;
+    margin: 0 auto 3rem auto;
+    h2 {
+      width: fit-content;
+      margin: auto;
+    }
+    p {
+      width: fit-content;
+      margin: auto;
+    }
+  }
+}
+
+// section 25% discount
+.banner-half {
+  display: flex;
+  box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.1);
+  .banner-side {
+    flex: 1;
+
+    img {
+      filter: brightness(50%);
+    }
+    .foreground {
+      color: rgb(255, 255, 255);
+    }
+    > div {
+      padding: 3rem;
+    }
+  }
+}
+
+.row-of-items {
+  display: flex;
+  gap: 1rem;
+}
+
+// section 50%
+.banner-full {
+  img {
+    filter: brightness(50%);
+  }
+  .background {
+    display: flex;
+    align-items: center;
+  }
+  .foreground {
+    display: flex;
+    align-items: center;
+  }
+  .banner-side {
+    color: rgb(255, 255, 255);
+    flex: 1;
+    p {
+      width: fit-content;
+      margin: 0.5rem auto;
+    }
+    .large-text {
+      font-size: 10rem;
+      font-weight: 900;
+    }
+  }
+}
+
+//(defaults: 768px, 1024px, 1440px).
+@media only screen and (min-width: 1024px) {
+  header,
+  .page-title,
+  main,
+  .footer-benefits,
+  .footer-info {
+    padding: 0 10%;
+  }
+  section {
+    max-width: $wide-screen-section-width;
+    margin: 3rem auto;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  header,
+  .page-title,
+  main,
+  .footer-benefits,
+  .footer-info {
+    padding: 0 3rem;
+  }
+  section {
+    max-width: $medium-screen-section-width;
+  }
+}
+@media only screen and (max-width: 768px) {
+  main > *,
+  header > * {
+    font-size: small;
+  }
+  header,
+  .page-title,
+  main,
+  .footer-benefits,
+  .footer-info {
+    padding: 0;
+  }
+  section {
+    max-width: $small-screen-section-width;
+  }
+}

@@ -1,0 +1,15 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  input {
+    border: 2px solid rgb(185, 39, 112);
+    height: 1.7rem;
+  }
+  textarea {
+    border: 2px solid rgb(185, 39, 112);
+
+    resize: none;
+    height: 90px;
+  }
+}
