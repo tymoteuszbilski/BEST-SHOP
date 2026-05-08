@@ -1,26 +1,16 @@
-const PAGE_LIMIT = 12;
-let currentStart = 0;
-let results_total = 0;
-let pages = 0;
-let current_page = 0;
-initialization();
-
-const PAGES = document.getElementById("PAGES");
 const RESULTS = document.getElementById("RESULTS") as HTMLParagraphElement;
+const COUNT = document.getElementById("itemsInCart") as HTMLDivElement;
 const SORT = document.getElementById("SORT") as HTMLSelectElement;
-SORT.addEventListener("change", (e: Event) => {
-  currentStart = 0;
-  current_page = 0;
-  console.log(SORT.value);
-  displayProducts("next", (e.target as HTMLOptionElement).value as Sort);
-});
-
 const NEXT = document.getElementById("NEXT") as HTMLButtonElement;
-NEXT.addEventListener("click", () => displayProducts("next"));
-
 const PREVIOUS = document.getElementById("PREVIOUS") as HTMLButtonElement;
-PREVIOUS.addEventListener("click", () => displayProducts("previous"));
-
+const CATALOG = document.getElementById("Product Catalog") as HTMLElement;
+catalog();
+function updateCartCounter() {
+  let itemsInCart;
+  for (let item in localStorage) {
+    console.log(item.valueOf());
+  }
+}
 function filterProducts(products: Product[], filters: Filter = filtersObject) {
   return products.filter((product: Product) =>
     filters.size === ""
@@ -37,98 +27,52 @@ function filterProducts(products: Product[], filters: Filter = filtersObject) {
 }
 const filtersObject = { size: "", color: "", category: "", salesStatus: false };
 
-async function getProducts() {
+async function getProducts(): Promise<Product[]> {
   const response = await fetch("/src/assets/data.json");
   const data = await response.json();
   const products = data.data;
 
   return products;
 }
+function updateItemCount(id: string) {
+  let amount = 1;
+  return function () {
+    localStorage.setItem(`${id}`, `${amount++}`);
+  };
+}
 
-async function initialization() {
+async function catalog() {
   const products = await getProducts();
-  results_total = products.length;
-  pages = Math.ceil(results_total / PAGE_LIMIT);
+  let page = new PageUI(products, 12);
+  page.renderPageNumbers();
+  populateElement(CATALOG, page.paginateProducts());
 
-  for (let i = 1; i <= pages; i++) {
-    const LI = document.createElement("li");
-    LI.innerHTML = `${i}`;
-    PAGES?.appendChild(LI);
-  }
-
-  displayProducts("next");
+  NEXT.onclick = () => {
+    populateElement(CATALOG, page.nextPage());
+  };
+  PREVIOUS.onclick = () => {
+    populateElement(CATALOG, page.previousPage());
+  };
+  SORT.onclick = () => {
+    sort(products, SORT.value as Sort);
+    page = new PageUI(products, 12);
+    populateElement(CATALOG, page.paginateProducts());
+  };
 }
 
-async function displayProducts(direction: Direction, sortBy: Sort = "default") {
-  const products = await getProducts();
-  pagination(sort(products, sortBy), direction);
-  updateUI(direction);
-}
-
-function pagination(products: Product[], direction: Direction) {
-  if (direction === "next") {
-    currentStart + PAGE_LIMIT > products.length
-      ? populateElement(products.slice(currentStart, products.length))
-      : populateElement(
-          products.slice(currentStart, currentStart + PAGE_LIMIT),
-        );
-    currentStart += PAGE_LIMIT;
-    current_page += 1;
-  } else if (direction === "previous") {
-    populateElement(products.slice(currentStart - 2 * PAGE_LIMIT, PAGE_LIMIT));
-    currentStart -= PAGE_LIMIT;
-    current_page -= 1;
-  }
-}
-
-function sort(products: Product[], sortBy: Sort) {
-  switch (sortBy) {
-    case "default":
-      break;
-    case "priceAsc":
-      products.sort((a: Product, b: Product) => a.price - b.price);
-      break;
-    case "priceDes":
-      products.sort((a: Product, b: Product) => b.price - a.price);
-      break;
-    case "popularity":
-      products.sort((a: Product, b: Product) => a.popularity - b.popularity);
-      break;
-    case "rating":
-      products.sort((a: Product, b: Product) => a.rating - b.rating);
-      break;
-  }
-  return products;
-}
-
-function updateUI(direction: Direction) {
-  RESULTS.innerHTML = `Showing ${currentStart - PAGE_LIMIT + 1} - ${currentStart > results_total ? results_total : currentStart} Of ${results_total} results `;
-  PAGES?.children[current_page - 1].classList.add("active");
-
-  current_page === 1
-    ? (PREVIOUS.style.visibility = "hidden")
-    : (PREVIOUS.style.visibility = "visible");
-  current_page === pages
-    ? (NEXT.style.visibility = "hidden")
-    : (NEXT.style.visibility = "visible");
-
-  direction === "next"
-    ? PAGES?.children[current_page - 2].classList.remove("active")
-    : PAGES?.children[current_page].classList.remove("active");
-}
-
-function populateElement(data: Product[]) {
-  const element = document.getElementById("Product Catalog");
+function populateElement(elementToPopulate: HTMLElement, data: Product[]) {
+  const element = elementToPopulate;
   while (element?.hasChildNodes()) {
     element.removeChild(element.firstChild as ChildNode);
   }
+
   for (let i = 0; i < data.length; i++) {
     let card = createProductCard(data[i]);
     element?.appendChild(card);
   }
 }
 
-function createProductCard(data: Product) {
+function createProductCard(data: Product): HTMLElement {
   const card = document.createElement("card");
   card.classList.add("product-card");
 
@@ -157,13 +101,36 @@ function createProductCard(data: Product) {
 
   const addButton = document.createElement("button");
   addButton.innerHTML = "Add To Cart";
+  let updateAmount = updateItemCount(data.id);
+  addButton.onclick = () => {
+    updateAmount();
+    updateCartCounter();
+  };
   card.appendChild(addButton);
 
   return card;
 }
 
-type Sort = "default" | "priceAsc" | "priceDes" | "popularity" | "rating";
-type Direction = "next" | "previous";
+function sort(products: Product[], sortBy: Sort): Product[] {
+  switch (sortBy) {
+    case "":
+      break;
+    case "priceAsc":
+      products.sort((a: Product, b: Product) => a.price - b.price);
+      break;
+    case "priceDes":
+      products.sort((a: Product, b: Product) => b.price - a.price);
+      break;
+    case "popularity":
+      products.sort((a: Product, b: Product) => a.popularity - b.popularity);
+      break;
+    case "rating":
+      products.sort((a: Product, b: Product) => a.rating - b.rating);
+      break;
+  }
+  return products;
+}
+type Sort = "" | "priceAsc" | "priceDes" | "popularity" | "rating";
 interface Product {
   id: string;
   name: string;
@@ -182,4 +149,93 @@ interface Filter {
   color: string;
   category: string;
   salesStatus: boolean;
+}
+
+class Products {
+  private _products: Product[];
+
+  constructor(products: Product[]) {
+    this._products = products;
+  }
+
+  public get products() {
+    return this._products;
+  }
+
+  public getProductByName(name: string) {
+    return this._products.find((i: Product) => i.name === name);
+  }
+
+  public getProductById(id: string) {
+    return this._products.find((i: Product) => i.id === id);
+  }
+}
+
+class PageUI extends Products {
+  private _productsPerPage;
+  private _totalPages;
+  private static _pageNumber: number;
+
+  constructor(_products: Product[], productsPerPage: number) {
+    super(_products);
+    this._productsPerPage = productsPerPage;
+    this._totalPages = Math.ceil(super.products.length / this._productsPerPage);
+    PageUI._pageNumber = 1;
+  }
+
+  public paginateProducts() {
+    this.highlightNavigation();
+    let start = (PageUI._pageNumber - 1) * this._productsPerPage;
+    let products = super.products;
+
+    if (products.length - start > this._productsPerPage)
+      return products.slice(start, start + this._productsPerPage);
+    else return products.slice(start, products.length);
+  }
+
+  public nextPage(): Product[] {
+    PageUI._pageNumber++;
+    return this.paginateProducts();
+  }
+
+  public previousPage(): Product[] {
+    PageUI._pageNumber--;
+    return this.paginateProducts();
+  }
+
+  public renderPageNumbers() {
+    let pageNumbers = document.getElementById("PAGES");
+
+    for (let i = 1; i <= this._totalPages; i++) {
+      let li = document.createElement("li");
+      li.innerHTML = i.toString();
+      pageNumbers?.appendChild(li);
+    }
+
+    return pageNumbers;
+  }
+
+  highlightNavigation() {
+    let pageNumbers = document.getElementById("PAGES");
+    for (let i = 0; i < this._totalPages; i++) {
+      pageNumbers?.children[i].innerHTML === PageUI._pageNumber.toString()
+        ? pageNumbers?.children[i].classList.add("active")
+        : pageNumbers?.children[i].classList.remove("active");
+    }
+
+    let nextButton = document.getElementById("NEXT") as HTMLButtonElement;
+    let previousButton = document.getElementById(
+      "PREVIOUS",
+    ) as HTMLButtonElement;
+    if (PageUI._pageNumber === this._totalPages) {
+      nextButton.style = "visibility:hidden";
+      previousButton.style = "visibility:visible";
+    } else if (PageUI._pageNumber === 1) {
+      previousButton.style = "visibility:hidden";
+      nextButton.style = "visibility:visible";
+    } else {
+      nextButton.style = "visibility:visible";
+      previousButton.style = "visibility:visible";
+    }
+  }
 }
