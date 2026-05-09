@@ -1,16 +1,31 @@
 const RESULTS = document.getElementById("RESULTS") as HTMLParagraphElement;
-const COUNT = document.getElementById("itemsInCart") as HTMLDivElement;
+const BADGE = document.getElementById("BADGE") as HTMLDivElement;
 const SORT = document.getElementById("SORT") as HTMLSelectElement;
 const NEXT = document.getElementById("NEXT") as HTMLButtonElement;
 const PREVIOUS = document.getElementById("PREVIOUS") as HTMLButtonElement;
 const CATALOG = document.getElementById("Product Catalog") as HTMLElement;
+
 catalog();
-function updateCartCounter() {
-  let itemsInCart;
-  for (let item in localStorage) {
-    console.log(item.valueOf());
+
+function addProductToCart(product: Product) {
+  let productArray;
+
+  if (localStorage.getItem("productsInCart") === null) {
+    productArray = [];
+  } else {
+    let storedProducts = localStorage.getItem("productsInCart") as string;
+    productArray = JSON.parse(storedProducts);
   }
+  productArray.push(product);
+  localStorage.setItem("productsInCart", JSON.stringify(productArray));
+
+  updateCart(productArray.length);
 }
+
+function updateCart(amount: number) {
+  BADGE.innerHTML = amount.toString();
+}
+
 function filterProducts(products: Product[], filters: Filter = filtersObject) {
   return products.filter((product: Product) =>
     filters.size === ""
@@ -34,12 +49,13 @@ async function getProducts(): Promise<Product[]> {
 
   return products;
 }
-function updateItemCount(id: string) {
-  let amount = 1;
-  return function () {
-    localStorage.setItem(`${id}`, `${amount++}`);
-  };
-}
+// funkcja inicjowana dla konkretnego id i licząca od 1 dla tego id
+// function updateItemCount(id: string) {
+//   let amount = 1;
+//   return function () {
+//     localStorage.setItem(`${id}`, `${amount++}`);
+//   };
+// }
 
 async function catalog() {
   const products = await getProducts();
@@ -72,14 +88,14 @@ function populateElement(elementToPopulate: HTMLElement, data: Product[]) {
   }
 }
 
-function createProductCard(data: Product): HTMLElement {
+function createProductCard(product: Product): HTMLElement {
   const card = document.createElement("card");
   card.classList.add("product-card");
 
   const productImage = document.createElement("div");
   productImage.classList.add("product-image");
 
-  if (data.salesStatus) {
+  if (product.salesStatus) {
     const sale = document.createElement("div");
     sale.classList.add("sale");
     sale.innerHTML = "SALE";
@@ -87,24 +103,24 @@ function createProductCard(data: Product): HTMLElement {
   }
 
   const img = document.createElement("img");
-  img.src = data.imageUrl;
+  img.src = product.imageUrl;
   productImage.appendChild(img);
   card.appendChild(productImage);
 
   const name = document.createElement("p");
-  name.innerHTML = data.name;
+  name.innerHTML = product.name;
   card.appendChild(name);
 
   const price = document.createElement("p");
-  price.innerHTML = `$${data.price}`;
+  price.innerHTML = `$${product.price}`;
   card.appendChild(price);
 
   const addButton = document.createElement("button");
   addButton.innerHTML = "Add To Cart";
-  let updateAmount = updateItemCount(data.id);
+  // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
   addButton.onclick = () => {
-    updateAmount();
-    updateCartCounter();
+    //  updateAmount();                             // update ilości dla konkretnego id
+    addProductToCart(product);
   };
   card.appendChild(addButton);
 

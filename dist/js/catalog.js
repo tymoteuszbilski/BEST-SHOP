@@ -9,17 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const RESULTS = document.getElementById("RESULTS");
-const COUNT = document.getElementById("itemsInCart");
+const BADGE = document.getElementById("BADGE");
 const SORT = document.getElementById("SORT");
 const NEXT = document.getElementById("NEXT");
 const PREVIOUS = document.getElementById("PREVIOUS");
 const CATALOG = document.getElementById("Product Catalog");
 catalog();
-function updateCartCounter() {
-    let itemsInCart;
-    for (let item in localStorage) {
-        console.log(item.valueOf());
+function addProductToCart(product) {
+    let productArray;
+    if (localStorage.getItem("productsInCart") === null) {
+        productArray = [];
     }
+    else {
+        let storedProducts = localStorage.getItem("productsInCart");
+        productArray = JSON.parse(storedProducts);
+    }
+    productArray.push(product);
+    localStorage.setItem("productsInCart", JSON.stringify(productArray));
+    updateCart(productArray.length);
+}
+function updateCart(amount) {
+    BADGE.innerHTML = amount.toString();
 }
 function filterProducts(products, filters = filtersObject) {
     return products.filter((product) => filters.size === ""
@@ -42,12 +52,13 @@ function getProducts() {
         return products;
     });
 }
-function updateItemCount(id) {
-    let amount = 1;
-    return function () {
-        localStorage.setItem(`${id}`, `${amount++}`);
-    };
-}
+// funkcja inicjowana dla konkretnego id i licząca od 1 dla tego id
+// function updateItemCount(id: string) {
+//   let amount = 1;
+//   return function () {
+//     localStorage.setItem(`${id}`, `${amount++}`);
+//   };
+// }
 function catalog() {
     return __awaiter(this, void 0, void 0, function* () {
         const products = yield getProducts();
@@ -77,33 +88,33 @@ function populateElement(elementToPopulate, data) {
         element === null || element === void 0 ? void 0 : element.appendChild(card);
     }
 }
-function createProductCard(data) {
+function createProductCard(product) {
     const card = document.createElement("card");
     card.classList.add("product-card");
     const productImage = document.createElement("div");
     productImage.classList.add("product-image");
-    if (data.salesStatus) {
+    if (product.salesStatus) {
         const sale = document.createElement("div");
         sale.classList.add("sale");
         sale.innerHTML = "SALE";
         productImage.appendChild(sale);
     }
     const img = document.createElement("img");
-    img.src = data.imageUrl;
+    img.src = product.imageUrl;
     productImage.appendChild(img);
     card.appendChild(productImage);
     const name = document.createElement("p");
-    name.innerHTML = data.name;
+    name.innerHTML = product.name;
     card.appendChild(name);
     const price = document.createElement("p");
-    price.innerHTML = `$${data.price}`;
+    price.innerHTML = `$${product.price}`;
     card.appendChild(price);
     const addButton = document.createElement("button");
     addButton.innerHTML = "Add To Cart";
-    let updateAmount = updateItemCount(data.id);
+    // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
     addButton.onclick = () => {
-        updateAmount();
-        updateCartCounter();
+        //  updateAmount();                             // update ilości dla konkretnego id
+        addProductToCart(product);
     };
     card.appendChild(addButton);
     return card;
