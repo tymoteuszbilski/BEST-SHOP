@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,50 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { getProducts, populateElement } from "./main.js";
 const RESULTS = document.getElementById("RESULTS");
-const BADGE = document.getElementById("BADGE");
 const SORT = document.getElementById("SORT");
 const NEXT = document.getElementById("NEXT");
 const PREVIOUS = document.getElementById("PREVIOUS");
 const CATALOG = document.getElementById("Product Catalog");
 catalog();
-function addProductToCart(product) {
-    let productArray;
-    if (localStorage.getItem("productsInCart") === null) {
-        productArray = [];
-    }
-    else {
-        let storedProducts = localStorage.getItem("productsInCart");
-        productArray = JSON.parse(storedProducts);
-    }
-    productArray.push(product);
-    localStorage.setItem("productsInCart", JSON.stringify(productArray));
-    updateCart(productArray.length);
-}
-function updateCart(amount) {
-    BADGE.innerHTML = amount.toString();
-}
-function filterProducts(products, filters = filtersObject) {
-    return products.filter((product) => filters.size === ""
-        ? true
-        : product.size === filters.size && filters.color === ""
-            ? true
-            : product.color === filters.color && filters.category === ""
-                ? true
-                : product.category === filters.category &&
-                    filters.salesStatus === false
-                    ? true
-                    : product.salesStatus === filters.salesStatus);
-}
-const filtersObject = { size: "", color: "", category: "", salesStatus: false };
-function getProducts() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch("/src/assets/data.json");
-        const data = yield response.json();
-        const products = data.data;
-        return products;
-    });
-}
 // funkcja inicjowana dla konkretnego id i licząca od 1 dla tego id
 // function updateItemCount(id: string) {
 //   let amount = 1;
@@ -77,47 +39,6 @@ function catalog() {
             populateElement(CATALOG, page.paginateProducts());
         };
     });
-}
-function populateElement(elementToPopulate, data) {
-    const element = elementToPopulate;
-    while (element === null || element === void 0 ? void 0 : element.hasChildNodes()) {
-        element.removeChild(element.firstChild);
-    }
-    for (let i = 0; i < data.length; i++) {
-        let card = createProductCard(data[i]);
-        element === null || element === void 0 ? void 0 : element.appendChild(card);
-    }
-}
-function createProductCard(product) {
-    const card = document.createElement("card");
-    card.classList.add("product-card");
-    const productImage = document.createElement("div");
-    productImage.classList.add("product-image");
-    if (product.salesStatus) {
-        const sale = document.createElement("div");
-        sale.classList.add("sale");
-        sale.innerHTML = "SALE";
-        productImage.appendChild(sale);
-    }
-    const img = document.createElement("img");
-    img.src = product.imageUrl;
-    productImage.appendChild(img);
-    card.appendChild(productImage);
-    const name = document.createElement("p");
-    name.innerHTML = product.name;
-    card.appendChild(name);
-    const price = document.createElement("p");
-    price.innerHTML = `$${product.price}`;
-    card.appendChild(price);
-    const addButton = document.createElement("button");
-    addButton.innerHTML = "Add To Cart";
-    // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
-    addButton.onclick = () => {
-        //  updateAmount();                             // update ilości dla konkretnego id
-        addProductToCart(product);
-    };
-    card.appendChild(addButton);
-    return card;
 }
 function sort(products, sortBy) {
     switch (sortBy) {
@@ -152,6 +73,7 @@ class Products {
         return this._products.find((i) => i.id === id);
     }
 }
+//TODO: zrobić ten katalog ładniejszym i czytelniejszym
 class PageUI extends Products {
     constructor(_products, productsPerPage) {
         super(_products);
@@ -160,7 +82,8 @@ class PageUI extends Products {
         PageUI._pageNumber = 1;
     }
     paginateProducts() {
-        this.highlightNavigation();
+        this.highlightPageNumbers();
+        this.togglePageButtons();
         let start = (PageUI._pageNumber - 1) * this._productsPerPage;
         let products = super.products;
         if (products.length - start > this._productsPerPage)
@@ -185,13 +108,15 @@ class PageUI extends Products {
         }
         return pageNumbers;
     }
-    highlightNavigation() {
+    highlightPageNumbers() {
         let pageNumbers = document.getElementById("PAGES");
         for (let i = 0; i < this._totalPages; i++) {
             (pageNumbers === null || pageNumbers === void 0 ? void 0 : pageNumbers.children[i].innerHTML) === PageUI._pageNumber.toString()
                 ? pageNumbers === null || pageNumbers === void 0 ? void 0 : pageNumbers.children[i].classList.add("active")
                 : pageNumbers === null || pageNumbers === void 0 ? void 0 : pageNumbers.children[i].classList.remove("active");
         }
+    }
+    togglePageButtons() {
         let nextButton = document.getElementById("NEXT");
         let previousButton = document.getElementById("PREVIOUS");
         if (PageUI._pageNumber === this._totalPages) {

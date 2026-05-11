@@ -1,6 +1,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
+  font-weight: bold;
   th {
     background-color: rgb(80, 78, 74);
     color: white;
@@ -8,12 +9,15 @@ table {
   td {
     border-bottom: 1px solid rgb(185, 39, 112);
   }
+  img {
+    max-height: 6rem;
+  }
 }
 .summary {
   table {
     text-align: center;
     td {
-      padding: 2rem;
+      padding: 0.5rem;
     }
   }
 }

@@ -179,6 +179,12 @@ button a {
   color: rgb(255, 255, 255);
 }
 
+.summary button {
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  font-size: larger;
+}
+
 .page-counter button {
   background-color: rgb(255, 255, 255);
   border: 3px solid rgb(185, 39, 112);
@@ -396,6 +402,7 @@ aside li {
 table {
   width: 100%;
   border-collapse: collapse;
+  font-weight: bold;
 }
 table th {
   background-color: rgb(80, 78, 74);
@@ -404,12 +411,15 @@ table th {
 table td {
   border-bottom: 1px solid rgb(185, 39, 112);
 }
+table img {
+  max-height: 6rem;
+}
 
 .summary table {
   text-align: center;
 }
 .summary table td {
-  padding: 2rem;
+  padding: 0.5rem;
 }
 
 .finalization {

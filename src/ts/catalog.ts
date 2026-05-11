@@ -1,54 +1,11 @@
+import { getProducts, populateElement, Product } from "./main.js";
 const RESULTS = document.getElementById("RESULTS") as HTMLParagraphElement;
-const BADGE = document.getElementById("BADGE") as HTMLDivElement;
 const SORT = document.getElementById("SORT") as HTMLSelectElement;
 const NEXT = document.getElementById("NEXT") as HTMLButtonElement;
 const PREVIOUS = document.getElementById("PREVIOUS") as HTMLButtonElement;
 const CATALOG = document.getElementById("Product Catalog") as HTMLElement;
-
 catalog();
 
-function addProductToCart(product: Product) {
-  let productArray;
-
-  if (localStorage.getItem("productsInCart") === null) {
-    productArray = [];
-  } else {
-    let storedProducts = localStorage.getItem("productsInCart") as string;
-    productArray = JSON.parse(storedProducts);
-  }
-  productArray.push(product);
-  localStorage.setItem("productsInCart", JSON.stringify(productArray));
-
-  updateCart(productArray.length);
-}
-
-function updateCart(amount: number) {
-  BADGE.innerHTML = amount.toString();
-}
-
-function filterProducts(products: Product[], filters: Filter = filtersObject) {
-  return products.filter((product: Product) =>
-    filters.size === ""
-      ? true
-      : product.size === filters.size && filters.color === ""
-        ? true
-        : product.color === filters.color && filters.category === ""
-          ? true
-          : product.category === filters.category &&
-              filters.salesStatus === false
-            ? true
-            : product.salesStatus === filters.salesStatus,
-  );
-}
-const filtersObject = { size: "", color: "", category: "", salesStatus: false };
-
-async function getProducts(): Promise<Product[]> {
-  const response = await fetch("/src/assets/data.json");
-  const data = await response.json();
-  const products = data.data;
-
-  return products;
-}
 // funkcja inicjowana dla konkretnego id i licząca od 1 dla tego id
 // function updateItemCount(id: string) {
 //   let amount = 1;
@@ -76,57 +33,6 @@ async function catalog() {
   };
 }
 
-function populateElement(elementToPopulate: HTMLElement, data: Product[]) {
-  const element = elementToPopulate;
-  while (element?.hasChildNodes()) {
-    element.removeChild(element.firstChild as ChildNode);
-  }
-
-  for (let i = 0; i < data.length; i++) {
-    let card = createProductCard(data[i]);
-    element?.appendChild(card);
-  }
-}
-
-function createProductCard(product: Product): HTMLElement {
-  const card = document.createElement("card");
-  card.classList.add("product-card");
-
-  const productImage = document.createElement("div");
-  productImage.classList.add("product-image");
-
-  if (product.salesStatus) {
-    const sale = document.createElement("div");
-    sale.classList.add("sale");
-    sale.innerHTML = "SALE";
-    productImage.appendChild(sale);
-  }
-
-  const img = document.createElement("img");
-  img.src = product.imageUrl;
-  productImage.appendChild(img);
-  card.appendChild(productImage);
-
-  const name = document.createElement("p");
-  name.innerHTML = product.name;
-  card.appendChild(name);
-
-  const price = document.createElement("p");
-  price.innerHTML = `$${product.price}`;
-  card.appendChild(price);
-
-  const addButton = document.createElement("button");
-  addButton.innerHTML = "Add To Cart";
-  // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
-  addButton.onclick = () => {
-    //  updateAmount();                             // update ilości dla konkretnego id
-    addProductToCart(product);
-  };
-  card.appendChild(addButton);
-
-  return card;
-}
-
 function sort(products: Product[], sortBy: Sort): Product[] {
   switch (sortBy) {
     case "":
@@ -147,25 +53,6 @@ function sort(products: Product[], sortBy: Sort): Product[] {
   return products;
 }
 type Sort = "" | "priceAsc" | "priceDes" | "popularity" | "rating";
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-  color: string;
-  size: string;
-  salesStatus: boolean;
-  rating: number;
-  popularity: number;
-  blocks: string[];
-}
-interface Filter {
-  size: string;
-  color: string;
-  category: string;
-  salesStatus: boolean;
-}
 
 class Products {
   private _products: Product[];
@@ -186,7 +73,7 @@ class Products {
     return this._products.find((i: Product) => i.id === id);
   }
 }
-
+//TODO: zrobić ten katalog ładniejszym i czytelniejszym
 class PageUI extends Products {
   private _productsPerPage;
   private _totalPages;
@@ -200,7 +87,9 @@ class PageUI extends Products {
   }
 
   public paginateProducts() {
-    this.highlightNavigation();
+    this.highlightPageNumbers();
+    this.togglePageButtons();
+
     let start = (PageUI._pageNumber - 1) * this._productsPerPage;
     let products = super.products;
 
@@ -231,14 +120,16 @@ class PageUI extends Products {
     return pageNumbers;
   }
 
-  highlightNavigation() {
+  private highlightPageNumbers() {
     let pageNumbers = document.getElementById("PAGES");
     for (let i = 0; i < this._totalPages; i++) {
       pageNumbers?.children[i].innerHTML === PageUI._pageNumber.toString()
         ? pageNumbers?.children[i].classList.add("active")
         : pageNumbers?.children[i].classList.remove("active");
     }
+  }
 
+  private togglePageButtons() {
     let nextButton = document.getElementById("NEXT") as HTMLButtonElement;
     let previousButton = document.getElementById(
       "PREVIOUS",

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function getProducts() {
+export function getProducts() {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield fetch("/src/assets/data.json");
         const data = yield response.json();
@@ -15,42 +15,61 @@ function getProducts() {
         return products;
     });
 }
-function getProductsForBlock(blockName) {
-    getProducts().then((products) => products.filter((item) => item.blocks.some((block) => block === blockName)));
-}
-export function displayProducts(id) {
-    getProducts().then((data) => populateElement(data, id));
-}
-function populateElement(data, id) {
-    const element = document.getElementById(id);
-    for (let i = 0; i < data.length; i++) {
-        let card = createProductCard(data[i]);
+export function populateElement(elementToPopulate, products) {
+    const element = elementToPopulate;
+    while (element === null || element === void 0 ? void 0 : element.hasChildNodes()) {
+        element.removeChild(element.firstChild);
+    }
+    for (let i = 0; i < products.length; i++) {
+        let card = createProductCard(products[i]);
         element === null || element === void 0 ? void 0 : element.appendChild(card);
     }
 }
-function createProductCard(data) {
+function createProductCard(product) {
     const card = document.createElement("card");
     card.classList.add("product-card");
     const productImage = document.createElement("div");
     productImage.classList.add("product-image");
-    if (data.salesStatus) {
+    if (product.salesStatus) {
         const sale = document.createElement("div");
         sale.classList.add("sale");
         sale.innerHTML = "SALE";
         productImage.appendChild(sale);
     }
     const img = document.createElement("img");
-    img.src = data.imageUrl;
+    img.src = product.imageUrl;
     productImage.appendChild(img);
     card.appendChild(productImage);
     const name = document.createElement("p");
-    name.innerHTML = data.name;
+    name.innerHTML = product.name;
     card.appendChild(name);
     const price = document.createElement("p");
-    price.innerHTML = `$${data.price}`;
+    price.innerHTML = `$${product.price}`;
     card.appendChild(price);
     const addButton = document.createElement("button");
     addButton.innerHTML = "Add To Cart";
+    // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
+    addButton.onclick = () => {
+        //  updateAmount();                             // update ilości dla konkretnego id
+        addProductToCart(product);
+    };
     card.appendChild(addButton);
     return card;
+}
+function addProductToCart(product) {
+    let productArray;
+    if (localStorage.getItem("productsInCart") === null) {
+        productArray = [];
+    }
+    else {
+        let storedProducts = localStorage.getItem("productsInCart");
+        productArray = JSON.parse(storedProducts);
+    }
+    productArray.push(product);
+    localStorage.setItem("productsInCart", JSON.stringify(productArray));
+    updateCart(productArray.length);
+}
+function updateCart(amount) {
+    const badge = document.getElementById("BADGE");
+    badge.innerHTML = amount.toString();
 }
