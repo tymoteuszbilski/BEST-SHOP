@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { getProducts, populateElement } from "./main.js";
+import { getProductsFromDB, populateElement } from "./main.js";
 const RESULTS = document.getElementById("RESULTS");
 const SORT = document.getElementById("SORT");
 const NEXT = document.getElementById("NEXT");
@@ -23,7 +23,7 @@ catalog();
 // }
 function catalog() {
     return __awaiter(this, void 0, void 0, function* () {
-        const products = yield getProducts();
+        const products = yield getProductsFromDB();
         let page = new PageUI(products, 12);
         page.renderPageNumbers();
         populateElement(CATALOG, page.paginateProducts());

@@ -1,78 +1,72 @@
+import { ItemInCart } from "./main.js";
+//import { createTableRow } from "./htmlElements.js";
 // TODO ogarnąć export{} na końcu pliku js
-function getProductsFromLocalStorage() {
-    let products;
-    if (localStorage.getItem("productsInCart") === null) {
-        products = [];
-    }
-    else {
-        let storedProducts = localStorage.getItem("productsInCart");
-        products = JSON.parse(storedProducts);
-    }
-    return products;
-}
-function count() {
-    const unique = getUniqueProducts();
-    const all = getProductsFromLocalStorage();
-    let amounts = new Array(unique.length);
-    amounts.fill(0);
-    for (let i = 0; i < unique.length; i++) {
-        for (let j = 0; j < all.length; j++) {
-            if (unique[i].id === all[j].id &&
-                unique[i].color === all[j].color &&
-                unique[i].size === all[j].size &&
-                unique[i].name === all[j].name) {
-                amounts[i]++;
-            }
-        }
-    }
-    return amounts;
-}
-function getUniqueProducts() {
-    let products = getProductsFromLocalStorage();
-    let productsStrings = [];
-    for (let i = 0; i < products.length; i++) {
-        productsStrings.push(JSON.stringify(products[i]));
-    }
-    let uniqueStrings = productsStrings.filter((product, index, products) => products.indexOf(product) === index);
-    let uniqueProducts = [];
-    for (let i = 0; i < uniqueStrings.length; i++) {
-        uniqueProducts.push(JSON.parse(uniqueStrings[i]));
-    }
-    return uniqueProducts;
-}
-populateTable();
-function populateTable() {
-    const table = document.getElementById("Cart Table");
-    // while (table?.hasChildNodes()) {
-    //   table.removeChild(table.firstChild as ChildNode);
-    // }
-    const amount = count();
-    let products = getUniqueProducts();
-    for (let i = 0; i < products.length; i++) {
-        let row = createTableRow(products[i], amount[i]);
-        table === null || table === void 0 ? void 0 : table.appendChild(row);
-    }
-}
-function createTableRow(product, amount) {
+function createTableRow(item) {
     let row = document.createElement("tr");
+    row.setAttribute("id", `${item.id + item.color + item.size}`);
     let img = document.createElement("td");
-    img.innerHTML = `<img src="${product.imageUrl}" >`;
+    img.innerHTML = `<img src="${item.imageUrl}" >`;
     row.appendChild(img);
     let name = document.createElement("td");
-    name.innerHTML = product.name;
+    name.innerHTML = item.name;
     row.appendChild(name);
     let price = document.createElement("td");
-    price.innerHTML = `$${product.price.toString()}`;
+    price.innerHTML = `$${item.price.toString()}`;
     row.appendChild(price);
-    let amountE = document.createElement("td");
-    amountE.innerHTML = `${amount.toString()}`;
-    row.appendChild(amountE);
+    let amount = document.createElement("td");
+    let amountChange = document.createElement("div");
+    amountChange.classList.add("amountChange");
+    let quan = document.createElement("p");
+    let sub = document.createElement("button");
+    let add = document.createElement("button");
+    quan.innerHTML = item.quantity.toString();
+    add.innerHTML = "+";
+    sub.innerHTML = "-";
+    sub.onclick = () => {
+        item.subtract();
+        item.quantity > 1 && item.quantity--;
+        quan.innerHTML = item.quantity.toString();
+        total.innerHTML = `$${item.quantity * item.price}`;
+    };
+    add.onclick = () => {
+        item.add();
+        item.quantity++;
+        quan.innerHTML = item.quantity.toString();
+        total.innerHTML = `$${item.quantity * item.price}`;
+    };
+    amountChange.appendChild(sub);
+    amountChange.appendChild(quan);
+    amountChange.appendChild(add);
+    amount.appendChild(amountChange);
+    row.appendChild(amount);
     let total = document.createElement("td");
-    total.innerHTML = `$${(amount * product.price).toString()}`;
+    total.innerHTML = `$${item.quantity * item.price}`;
     row.appendChild(total);
     let remove = document.createElement("td");
-    remove.innerHTML = `<img src="/public/icons/iconTrash.svg" >`;
+    let removeBtn = document.createElement("button");
+    removeBtn.innerHTML = `<img src="/public/icons/iconTrash.svg" >`;
+    remove.appendChild(removeBtn);
     row.appendChild(remove);
+    removeBtn.onclick = () => {
+        var _a;
+        item.remove();
+        (_a = row.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(row);
+    };
     return row;
 }
-export {};
+function renderTable() {
+    const table = document.getElementById("Cart Table");
+    let items = getCartContents();
+    items.forEach((item) => {
+        let row = createTableRow(new ItemInCart(item));
+        table.appendChild(row);
+    });
+    return table;
+}
+function getCartContents() {
+    let items;
+    let products = localStorage.getItem("productsInCart");
+    products === null ? (items = []) : (items = JSON.parse(products));
+    return items;
+}
+renderTable();

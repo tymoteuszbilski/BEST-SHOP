@@ -1,4 +1,4 @@
-import { getProducts, populateElement, Product } from "./main.js";
+import { getProductsFromDB, populateElement, CProduct } from "./main.js";
 const RESULTS = document.getElementById("RESULTS") as HTMLParagraphElement;
 const SORT = document.getElementById("SORT") as HTMLSelectElement;
 const NEXT = document.getElementById("NEXT") as HTMLButtonElement;
@@ -15,7 +15,7 @@ catalog();
 // }
 
 async function catalog() {
-  const products = await getProducts();
+  const products = await getProductsFromDB();
   let page = new PageUI(products, 12);
   page.renderPageNumbers();
   populateElement(CATALOG, page.paginateProducts());
@@ -33,21 +33,21 @@ async function catalog() {
   };
 }
 
-function sort(products: Product[], sortBy: Sort): Product[] {
+function sort(products: CProduct[], sortBy: Sort): CProduct[] {
   switch (sortBy) {
     case "":
       break;
     case "priceAsc":
-      products.sort((a: Product, b: Product) => a.price - b.price);
+      products.sort((a: CProduct, b: CProduct) => a.price - b.price);
       break;
     case "priceDes":
-      products.sort((a: Product, b: Product) => b.price - a.price);
+      products.sort((a: CProduct, b: CProduct) => b.price - a.price);
       break;
     case "popularity":
-      products.sort((a: Product, b: Product) => a.popularity - b.popularity);
+      products.sort((a: CProduct, b: CProduct) => a.popularity - b.popularity);
       break;
     case "rating":
-      products.sort((a: Product, b: Product) => a.rating - b.rating);
+      products.sort((a: CProduct, b: CProduct) => a.rating - b.rating);
       break;
   }
   return products;
@@ -55,9 +55,9 @@ function sort(products: Product[], sortBy: Sort): Product[] {
 type Sort = "" | "priceAsc" | "priceDes" | "popularity" | "rating";
 
 class Products {
-  private _products: Product[];
+  private _products: CProduct[];
 
-  constructor(products: Product[]) {
+  constructor(products: CProduct[]) {
     this._products = products;
   }
 
@@ -66,11 +66,11 @@ class Products {
   }
 
   public getProductByName(name: string) {
-    return this._products.find((i: Product) => i.name === name);
+    return this._products.find((i: CProduct) => i.name === name);
   }
 
   public getProductById(id: string) {
-    return this._products.find((i: Product) => i.id === id);
+    return this._products.find((i: CProduct) => i.id === id);
   }
 }
 //TODO: zrobić ten katalog ładniejszym i czytelniejszym
@@ -79,7 +79,7 @@ class PageUI extends Products {
   private _totalPages;
   private static _pageNumber: number;
 
-  constructor(_products: Product[], productsPerPage: number) {
+  constructor(_products: CProduct[], productsPerPage: number) {
     super(_products);
     this._productsPerPage = productsPerPage;
     this._totalPages = Math.ceil(super.products.length / this._productsPerPage);
@@ -98,12 +98,12 @@ class PageUI extends Products {
     else return products.slice(start, products.length);
   }
 
-  public nextPage(): Product[] {
+  public nextPage(): CProduct[] {
     PageUI._pageNumber++;
     return this.paginateProducts();
   }
 
-  public previousPage(): Product[] {
+  public previousPage(): CProduct[] {
     PageUI._pageNumber--;
     return this.paginateProducts();
   }
