@@ -1,5 +1,7 @@
 // any jest do zmiany :DD
-export function createProductCard(product: any): HTMLElement {
+import { CProduct } from "./classes";
+
+export function createProductCard(product: CProduct): HTMLElement {
   const card = document.createElement("card");
   card.classList.add("product-card");
 
@@ -28,19 +30,25 @@ export function createProductCard(product: any): HTMLElement {
 
   const addButton = document.createElement("button");
   addButton.innerHTML = "Add To Cart";
+  addButton.onclick = () => product.add();
   // let updateAmount = updateItemCount(data.id); // inicjalizacja funkcji dla konkretnego id
   //   addButton.onclick = () => {
   //     //  updateAmount();                             // update ilości dla konkretnego id
   //     addProductToCart(product);
   //   };
   card.appendChild(addButton);
-
   return card;
 }
 
-export function createTableRow(item: any) {
+export function createTableHeader() {
+  const header = document.createElement("tr");
+  header.innerHTML =
+    "<th>IMAGE</th><th>PRODUCT NAME</th><th>PRICE</th><th>QUANTITY</th><th>TOTAL</th><th>DELETE</th>";
+  return header;
+}
+
+export function createTableRow(item: CProduct) {
   let row = document.createElement("tr");
-  row.setAttribute("id", `${item.id + item.color + item.size}`);
 
   let img = document.createElement("td");
   img.innerHTML = `<img src="${item.imageUrl}" >`;
@@ -55,32 +63,59 @@ export function createTableRow(item: any) {
   row.appendChild(price);
 
   let amount = document.createElement("td");
-
-  let amountChange = document.createElement("div");
-  amountChange.classList.add("amountChange");
-  amount.appendChild(amountChange);
-
-  let sub = document.createElement("button");
-  sub.onclick = item.subtract;
-  amountChange.appendChild(sub);
-
-  let quan = document.createElement("p");
-  quan.innerHTML = item.quantity.toString();
-  amountChange.appendChild(quan);
-
-  let add = document.createElement("button");
-  add.onclick = item.add;
-  amountChange.appendChild(add);
+  amount.appendChild(createAmountChangeDiv(item));
+  amount.onclick = () => (total.innerHTML = `$${item.quantity * item.price}`);
 
   row.appendChild(amount);
 
   let total = document.createElement("td");
-  total.innerHTML = `$${item.total.toString()}`;
+  total.innerHTML = `$${item.quantity * item.price}`;
   row.appendChild(total);
 
   let remove = document.createElement("td");
-  remove.innerHTML = `<img src="/public/icons/iconTrash.svg" >`;
+  remove.appendChild(createRemoveButton(item, row));
   row.appendChild(remove);
 
   return row;
+}
+
+function createAmountChangeDiv(item: CProduct) {
+  let amountChange = document.createElement("div");
+  amountChange.classList.add("amountChange");
+
+  let quan = document.createElement("p");
+  let sub = document.createElement("button");
+  let add = document.createElement("button");
+  quan.innerHTML = item.quantity.toString();
+  add.innerHTML = "+";
+  sub.innerHTML = "-";
+
+  sub.onclick = () => {
+    item.subtract();
+    item.quantity > 1 && item.quantity--;
+    quan.innerHTML = item.quantity.toString();
+  };
+
+  add.onclick = () => {
+    item.add();
+    item.quantity++;
+    quan.innerHTML = item.quantity.toString();
+  };
+
+  amountChange.appendChild(sub);
+  amountChange.appendChild(quan);
+  amountChange.appendChild(add);
+
+  return amountChange;
+}
+
+function createRemoveButton(item: CProduct, row: HTMLElement) {
+  let removeBtn = document.createElement("button");
+  removeBtn.innerHTML = `<img src="/public/icons/iconTrash.svg" >`;
+  removeBtn.onclick = () => {
+    item.remove();
+    row.parentNode?.removeChild(row);
+  };
+
+  return removeBtn;
 }
